@@ -1,15 +1,77 @@
 package main
 
 import (
-	"flag"
-	"fmt"
+    "encoding/json"
+    "fmt"
+    "log"
+    "net/http"
+    "os/exec"
+    "sync"
+    "time"
+)
+
+type Replica struct {
+    ID   string
+    PID  int
+    Port int
+}
+
+var (
+    replicas = make(map[string]*Replica)
+    mu       sync.Mutex
 )
 
 func main() {
-	controllerURL := flag.String("controller", "http://127.0.0.1:8080", "Controller URL")
-	port := flag.String("port", "9090", "Agent port")
-	flag.Parse()
+    go registerLoop()
 
-	fmt.Println("Starting Agent on port", *port)
-	startAgent(*controllerURL, *port)
+    http.HandleFunc("/start", startHandler)
+    http.HandleFunc("/stop", stopHandler)
+
+    log.Println("Agent running on :9100")
+    log.Fatal(http.ListenAndServe(":9100", nil))
+}
+
+func registerLoop() {
+    for {
+        http.Get("http://controller:9000/register")
+        time.Sleep(3 * time.Second)
+    }
+}
+
+func startHandler(w http.ResponseWriter, r *http.Request) {
+    id := r.URL.Query().Get("id")
+
+    mu.Lock()
+    port := 9200 + len(replicas)
+    mu.Unlock()
+
+    cmd := exec.Command("/usr/bin/payload", "-port", fmt.Sprint(port))
+    cmd.Start()
+
+    mu.Lock()
+    replicas[id] = &Replica{
+        ID:   id,
+        PID:  cmd.Process.Pid,
+        Port: port,
+    }
+    mu.Unlock()
+
+    json.NewEncoder(w).Encode(map[string]int{
+        "Pid":  cmd.Process.Pid,
+        "Port": port,
+    })
+}
+
+func stopHandler(w http.ResponseWriter, r *http.Request) {
+    id := r.URL.Query().Get("id")
+
+    mu.Lock()
+    rep, ok := replicas[id]
+    if ok {
+        exec.Command("kill", fmt.Sprint(rep.PID)).Run()
+        delete(replicas, id)
+    }
+    mu.Unlock()
+
+    w.Write([]byte("OK"))
 }

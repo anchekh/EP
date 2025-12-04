@@ -1,0 +1,11 @@
+[Unit]
+Description=EP Agent
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/agent
+Restart=always
+WorkingDirectory=/opt/ep-cluster/agent
+
+[Install]
+WantedBy=multi-user.target

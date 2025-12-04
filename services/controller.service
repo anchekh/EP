@@ -1,0 +1,11 @@
+[Unit]
+Description=EP Controller
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/controller
+Restart=always
+WorkingDirectory=/opt/ep-cluster/controller
+
+[Install]
+WantedBy=multi-user.target
