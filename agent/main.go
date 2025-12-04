@@ -33,7 +33,7 @@ func main() {
 
 func registerLoop() {
 	for {
-		http.Get("http://controller:9000/register")
+		http.Get("http://192.168.56.102:9000/register")
 		time.Sleep(3 * time.Second)
 	}
 }
