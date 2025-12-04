@@ -99,7 +99,7 @@ curl -X POST -d '{"replicas":1}' http://CONTROLLER_HOST:9000/scale  # 1 репл
 ```
 ``` bash
 ps aux | grep payload_bin
-sudo kill -9 <PID реплики>
+sudo kill -9 REPLICA_PID
 curl http://CONTROLLER_HOST:9000/status
 ```
 ``` markdown
