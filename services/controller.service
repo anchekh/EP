@@ -3,9 +3,9 @@ Description=EP Controller
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/controller
+ExecStart=/home/user/EP/controller/controller_bin
 Restart=always
-WorkingDirectory=/opt/ep-cluster/controller
+WorkingDirectory=/home/user/EP/controller
 
 [Install]
 WantedBy=multi-user.target

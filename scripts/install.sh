@@ -11,12 +11,10 @@ cp -r agent /opt/ep-cluster/
 cp -r payload /opt/ep-cluster/
 cp services/*.service /etc/systemd/system/
 
-echo "[EP] Building binaries..."
-
-go build -o /usr/bin/controller ./controller
-go build -o /usr/bin/agent ./agent
-go build -o /usr/bin/payload ./payload
+echo "[EP] Binaries already built as controller_bin, agent_bin, payload_bin."
 
 systemctl daemon-reload
+systemctl enable controller
+systemctl enable agent
 
-echo "[EP] Done."
+echo "[EP] Installation done."

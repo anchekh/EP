@@ -3,9 +3,9 @@ Description=EP Agent
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/agent
+ExecStart=/home/user/EP/agent/agent_bin
 Restart=always
-WorkingDirectory=/opt/ep-cluster/agent
+WorkingDirectory=/home/user/EP/agent
 
 [Install]
 WantedBy=multi-user.target
